@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - 24/7 Seguridad Integral</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Anaheim&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #1b5d03;
+            --secondary: #239a02;
+        }
+
+        body {
+            font-family: 'Anaheim', sans-serif;
+            background: #f8f9fa;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            height: 100vh;
+            position: fixed;
+            width: 280px;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-info {
+            text-align: center;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .user-avatar {
+            width: 100%;
+            max-width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .unit-button {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: none;
+            border-radius: 10px;
+            background: #f8f9fa;
+            color: var(--primary);
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .unit-button:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .unit-button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .content-frame {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            gap: 2rem;
+            height: calc(100vh - 4rem);
+            overflow: hidden;
+        }
+
+        .frame-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .frame-title {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin: 0;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .map-container {
+            flex: 1;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            height: calc(100vh - 8rem);
+        }
+
+        .pdf-container {
+            flex: 1;
+            border-radius: 15px;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            height: calc(100vh - 8rem);
+        }
+
+        .loading-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #666;
+            text-align: center;
+            z-index: 1;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        .logout-btn {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            width: calc(280px - 4rem);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">
+                <!-- Se llenará dinámicamente -->
+            </div>
+            <h5 id="userName">Cargando...</h5>
+            <p id="userType" class="text-muted">Cargando...</p>
+        </div>
+        <div id="unitsContainer">
+            <!-- Los botones de unidades se cargarán aquí -->
+        </div>
+        <button class="btn btn-danger logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            Cerrar Sesión
+        </button>
+    </div>
+
+    <div class="main-content">
+        <div class="content-frame">
+            <div class="frame-container">
+                <h3 class="frame-title">
+                    <i class="fas fa-map-marked-alt me-2"></i>
+                    Vista 360°
+                </h3>
+                <div class="map-container">
+                    <iframe id="mapaFrame" src="about:blank"></iframe>
+                </div>
+            </div>
+            <div class="frame-container">
+                <h3 class="frame-title">
+                    <i class="fas fa-file-pdf me-2"></i>
+                    Documentación
+                </h3>
+                <div class="pdf-container">
+                    <div id="pdfLoading" class="loading-message">
+                        <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
+                        <p>Cargando documento...</p>
+                    </div>
+                    <iframe id="pdfFrame" src="about:blank"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let projectsData = [];
+
+        // Verificar sesión y cargar datos
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = JSON.parse(sessionStorage.getItem('userData'));
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Cargar datos del usuario
+            document.getElementById('userName').textContent = userData.nombre || userData.username;
+            document.getElementById('userType').textContent = userData.rol;
+            
+            // Cargar logo del usuario
+            const avatarContainer = document.getElementById('userAvatar');
+            if (userData.logo) {
+                avatarContainer.innerHTML = `<img src="${userData.logo}" alt="Logo">`;
+            } else {
+                avatarContainer.innerHTML = '<i class="fas fa-user"></i>';
+            }
+
+            // Cargar datos del dashboard
+            loadDashboardData(userData.username);
+        });
+
+        function loadDashboardData(username) {
+            const baseUrl = 'https://script.google.com/macros/s/AKfycbwbMz5Cue86EDMDSRzq_gb6j25TdEnbPJSORiSP4sg/dev';
+            const callbackName = 'dashboardCallback_' + Date.now();
+            
+            window[callbackName] = function(response) {
+                if (response.success && response.data) {
+                    projectsData = response.data;
+                    renderUnits(response.data);
+                    if (projectsData.length > 0) {
+                        loadProject(0); // Cargar el primer proyecto por defecto
+                    }
+                }
+                delete window[callbackName];
+            };
+            
+            const script = document.createElement('script');
+            script.src = `${baseUrl}?action=getUserDashboard&callback=${callbackName}&username=${encodeURIComponent(username)}`;
+            document.body.appendChild(script);
+            script.onload = function() {
+                document.body.removeChild(script);
+            };
+        }
+
+        function renderUnits(projects) {
+            const container = document.getElementById('unitsContainer');
+            container.innerHTML = '';
+            
+            projects.forEach((project, index) => {
+                const button = document.createElement('button');
+                button.className = 'unit-button';
+                button.innerHTML = `<i class="fas fa-building me-2"></i>${project.unidad}`;
+                button.onclick = () => loadProject(index);
+                container.appendChild(button);
+            });
+        }
+
+        function loadProject(index) {
+            // Actualizar botones activos
+            document.querySelectorAll('.unit-button').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+
+            // Cargar contenido en los iframes
+            const project = projectsData[index];
+            document.getElementById('mapaFrame').src = project.mapaUrl;
+            
+            // Mostrar mensaje de carga
+            document.getElementById('pdfLoading').style.display = 'block';
+            
+            // Cargar PDF
+            const pdfFrame = document.getElementById('pdfFrame');
+            pdfFrame.onload = function() {
+                document.getElementById('pdfLoading').style.display = 'none';
+            };
+            pdfFrame.src = project.pdfUrl;
+        }
+
+        function logout() {
+            sessionStorage.removeItem('userData');
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
