@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingresar Riesgo - Total Risk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Anaheim&display=swap');
+        
+        body {
+            font-family: 'Anaheim', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        .form-floating > label {
+            font-weight: 500;
+        }
+
+        .risk-level {
+            transition: all 0.3s ease;
+        }
+
+        .risk-level:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #2E7D32;
+            box-shadow: 0 0 0 0.25rem rgba(46, 125, 50, 0.25);
+        }
+
+        .risk-block {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .risk-type-icon {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="container">
+        <h2 class="text-success mb-4">
+            <i class="fas fa-plus-circle me-2"></i>Ingresar Nuevo Riesgo
+        </h2>
+
+        <div class="card">
+            <div class="card-body p-4">
+                <form id="riskForm">
+                    <div id="riesgosContainer">
+                        <div class="risk-block">
+                            <!-- Selector de Unidad de Negocio -->
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <div class="form-floating">
+                                        <select class="form-select" required>
+                                            <option value="">Seleccione una unidad...</option>
+                                            <option>Minera Copper Peak</option>
+                                            <option>Minera Golden Hills</option>
+                                            <option>Minera Silver Springs</option>
+                                            <option>Minera Diamond Rock</option>
+                                            <option>Minera Iron Valley</option>
+                                        </select>
+                                        <label>Unidad de Negocio</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" value="RSG-001" readonly>
+                                        <label>ID de Riesgo</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="form-floating mb-3">
+                                        <textarea class="form-control" style="height: 100px" placeholder="Descripción" required></textarea>
+                                        <label>Descripción del Riesgo</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Campo para Adjuntar Evidencia -->
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <label for="adjuntarEvidencia">Adjuntar Evidencia</label>
+                                    <input type="file" class="form-control" id="adjuntarEvidencia" accept="image/*">
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <label for="tipoRiesgo">Tipo de Riesgo</label>
+                                    <div>
+                                        <input type="checkbox" class="tipoRiesgo" value="Operacional"> <i class="fas fa-cogs risk-type-icon"></i> Operacional
+                                        <input type="checkbox" class="tipoRiesgo" value="Económico"> <i class="fas fa-dollar-sign risk-type-icon"></i> Económico
+                                        <input type="checkbox" class="tipoRiesgo" value="Reputacional"> <i class="fas fa-star risk-type-icon"></i> Reputacional
+                                        <input type="checkbox" class="tipoRiesgo" value="Normativo"> <i class="fas fa-gavel risk-type-icon"></i> Normativo
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detallesRiesgoContainer"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 text-end">
+                        <button type="button" class="btn btn-light me-2" onclick="limpiarFormulario()">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </button>
+                        <button type="button" class="btn btn-info me-2" onclick="agregarRiesgo()">
+                            <i class="fas fa-plus me-2"></i>Agregar Riesgo
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check-circle me-2"></i>Registrar Riesgo
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function limpiarFormulario() {
+            document.getElementById('riskForm').reset();
+            $('.detallesRiesgoContainer').empty();
+        }
+
+        function agregarRiesgo() {
+            const newBlock = `
+                <div class="risk-block">
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" value="RSG-00X" readonly>
+                                <label>ID de Riesgo</label>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-floating mb-3">
+                                <textarea class="form-control" style="height: 100px" placeholder="Descripción" required></textarea>
+                                <label>Descripción del Riesgo</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campo para Adjuntar Evidencia -->
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <label for="adjuntarEvidencia">Adjuntar Evidencia</label>
+                            <input type="file" class="form-control" id="adjuntarEvidencia" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <label for="tipoRiesgo">Tipo de Riesgo</label>
+                            <div>
+                                <input type="checkbox" class="tipoRiesgo" value="Operacional"> <i class="fas fa-cogs risk-type-icon"></i> Operacional
+                                <input type="checkbox" class="tipoRiesgo" value="Económico"> <i class="fas fa-dollar-sign risk-type-icon"></i> Económico
+                                <input type="checkbox" class="tipoRiesgo" value="Reputacional"> <i class="fas fa-star risk-type-icon"></i> Reputacional
+                                <input type="checkbox" class="tipoRiesgo" value="Normativo"> <i class="fas fa-gavel risk-type-icon"></i> Normativo
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detallesRiesgoContainer"></div>
+                </div>
+            `;
+            $('#riesgosContainer').append(newBlock);
+        }
+
+        $(document).on('change', '.tipoRiesgo', function() {
+            const detallesRiesgoContainer = $(this).closest('.risk-block').find('.detallesRiesgoContainer');
+            detallesRiesgoContainer.empty(); // Limpiar el contenedor antes de agregar nuevos detalles
+
+            const selectedOptions = $(this).closest('.risk-block').find('.tipoRiesgo:checked');
+            selectedOptions.each(function() {
+                const tipoRiesgo = $(this).val();
+                const icon = getIconForRiskType(tipoRiesgo);
+                const detallesRiesgo = `
+                    <div class="detallesRiesgo mb-4">
+                        <h6><i class="${icon} risk-type-icon"></i> ${tipoRiesgo}</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" required>
+                                        <option value="">Seleccione...</option>
+                                        <option>Leve</option>
+                                        <option>Moderado</option>
+                                        <option>Grave</option>
+                                        <option>Crítico</option>
+                                        <option>Catastrofico</option>
+                                    </select>
+                                    <label>Impacto</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" required>
+                                        <option value="">Seleccione...</option>
+                                        <option>Improbable</option>
+                                        <option>Poco probable</option>
+                                        <option>Probable</option>
+                                        <option>Muy probable</option>
+                                        <option>Constante</option>
+                                    </select>
+                                    <label>Probabilidad</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" placeholder="Nivel de Riesgo" readonly>
+                                    <label>Nivel de Riesgo</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                detallesRiesgoContainer.append(detallesRiesgo);
+            });
+        });
+
+        function getIconForRiskType(tipo) {
+            switch(tipo) {
+                case 'Operacional':
+                    return 'fas fa-cogs';
+                case 'Económico':
+                    return 'fas fa-dollar-sign';
+                case 'Reputacional':
+                    return 'fas fa-star';
+                case 'Normativo':
+                    return 'fas fa-gavel';
+                default:
+                    return '';
+            }
+        }
+    </script>
+</body>
+</html> 

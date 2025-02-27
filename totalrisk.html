@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Riesgos</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Anaheim&display=swap');
+
+        :root {
+            --primary-green: #2E7D32;
+            --light-green: #4CAF50;
+            --risk-high: #dc3545;
+            --risk-medium: #ffc107;
+            --risk-low: #198754;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        #riskTable {
+            font-family: 'Anaheim', sans-serif;
+            font-size: 1.1em;
+        }
+
+        .nivel-riesgo {
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+
+        .nivel-alto {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--risk-high);
+        }
+
+        .nivel-medio {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--risk-medium);
+        }
+
+        .nivel-bajo {
+            background-color: rgba(25, 135, 84, 0.1);
+            color: var(--risk-low);
+        }
+        
+        #sidebar {
+            min-height: 100vh;
+            background-color: white;
+            border-right: 1px solid #dee2e6;
+        }
+        
+        .sidebar-link {
+            color: #333;
+            text-decoration: none;
+            padding: 1rem;
+            display: block;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-link:hover {
+            background-color: #e9ecef;
+            color: var(--primary-green);
+        }
+        
+        .sidebar-link.active {
+            background-color: var(--light-green);
+            color: white;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        
+        .chart-container {
+            margin-bottom: 3rem;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .chart-box {
+            flex: 1;
+            min-width: 300px;
+            height: 250px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .action-buttons .btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        /* Estilos para el botón de evidencia */
+        .btn-outline-info:hover {
+            background-color: #0dcaf0;
+            color: white;
+        }
+
+        /* Ajustar el ancho de la columna de evidencia */
+        #seguimientoTable td:nth-child(2) {
+            width: 80px;
+        }
+
+        .tipos-riesgo .badge {
+            font-size: 0.8em;
+            padding: 5px 8px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .impactos small, 
+        .probabilidades small {
+            font-size: 0.85em;
+            color: #666;
+            width: 100%;
+            padding: 5px 8px;
+            border-left: 3px solid #dee2e6;
+        }
+
+        .niveles-riesgo .nivel-riesgo {
+            font-size: 0.85em;
+            margin-bottom: 3px;
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        td .d-block {
+            line-height: 1.4;
+        }
+
+        /* Ajustes de alineación y espaciado */
+        .table td {
+            padding: 12px 8px;
+        }
+
+        /* Ajustar anchos específicos de columnas */
+        #seguimientoTable td:nth-child(5), /* Columna de Impacto */
+        #seguimientoTable td:nth-child(6) { /* Columna de Probabilidad */
+            min-width: 200px;
+            white-space: nowrap;
+        }
+
+        #seguimientoTable td:nth-child(7) { /* Columna de Nivel de Riesgo */
+            min-width: 180px;
+        }
+
+        #seguimientoTable td:nth-child(4) { /* Columna de Tipo de Riesgo */
+            min-width: 150px;
+        }
+
+        .tipos-riesgo, .impactos, .probabilidades, .niveles-riesgo {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        /* Estilo para las abreviaturas */
+        .tipo-abrev {
+            font-size: 0.75em;
+            opacity: 0.8;
+            background: rgba(0,0,0,0.1);
+            padding: 2px 4px;
+            border-radius: 3px;
+            margin-left: 4px;
+            display: inline-block;
+            min-width: 35px;
+            text-align: center;
+        }
+
+        /* Estilos para el selector de unidad de negocio */
+        .unit-filter {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .unit-badge {
+            font-size: 0.85em;
+            padding: 5px 10px;
+            border-radius: 4px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: white;
+            margin-right: 8px;
+        }
+
+        /* Ajustes de alineación y espaciado para la tabla */
+        #seguimientoTable {
+            margin-top: 2rem;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        #seguimientoTable thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            padding: 12px 15px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        #seguimientoTable td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        /* Anchos específicos para las columnas */
+        #seguimientoTable th:nth-child(1), /* ID */
+        #seguimientoTable td:nth-child(1) {
+            width: 80px;
+        }
+
+        #seguimientoTable th:nth-child(2), /* Unidad */
+        #seguimientoTable td:nth-child(2) {
+            width: 150px;
+        }
+
+        #seguimientoTable th:nth-child(3), /* Evidencia */
+        #seguimientoTable td:nth-child(3) {
+            width: 80px;
+            text-align: center;
+        }
+
+        #seguimientoTable th:nth-child(4), /* Descripción */
+        #seguimientoTable td:nth-child(4) {
+            min-width: 200px;
+        }
+
+        /* Mejorar la visualización de los estados */
+        .estado-pendiente {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .estado-completado {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .estado-vencido {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 px-0" id="sidebar">
+                <div class="p-3 text-center">
+                    <img src="https://i.postimg.cc/0j0vMQDC/LOGO-24-7-removebg-preview-1.png" alt="Total Risk Logo" class="img-fluid mb-3" style="max-width: 150px;">
+                    <h4 class="text-success">Total Risk</h4>
+                    <div class="user-info mt-3">
+                        <i class="fas fa-user-circle fa-2x text-success"></i>
+                        <h6 class="mt-2 mb-0">Henry Flores</h6>
+                        <small class="text-muted">Administrador</small>
+                    </div>
+                </div>
+                <div class="nav flex-column">
+                    <a href="principal.html" class="sidebar-link active">
+                        <i class="fas fa-chart-line me-2"></i> Dashboard Central
+                    </a>
+                    <a href="ingresar-riesgo.html" class="sidebar-link">
+                        <i class="fas fa-plus-circle me-2"></i> Ingresar Riesgo
+                    </a>
+                    <a href="seguimiento.html" class="sidebar-link">
+                        <i class="fas fa-tasks me-2"></i> Seguimiento
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10 p-4" id="mainContent">
+                <h2 class="mb-4 text-success">Dashboard Central</h2>
+                <!-- Filtro de Unidad de Negocio -->
+                <div class="unit-filter">
+                    <h5 class="mb-3">Filtrar por Unidad de Negocio</h5>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-outline-success active">Todas</button>
+                        <button class="btn btn-outline-success">Minera Copper Peak</button>
+                        <button class="btn btn-outline-success">Minera Golden Hills</button>
+                        <button class="btn btn-outline-success">Minera Silver Springs</button>
+                        <button class="btn btn-outline-success">Minera Diamond Rock</button>
+                        <button class="btn btn-outline-success">Minera Iron Valley</button>
+                    </div>
+                </div>
+
+                <!-- Gráficas y Tabla de Seguimiento -->
+                <div class="chart-container">
+                    <div class="chart-box">
+                        <h5 class="chart-title">Distribución por Tipo de Riesgo</h5>
+                        <canvas id="tipoRiesgoChart"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h5 class="chart-title">Niveles de Riesgo</h5>
+                        <canvas id="nivelRiesgoChart"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h5 class="chart-title">Tendencia de Riesgos</h5>
+                        <canvas id="tendenciaRiesgosChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="seguimientoTable" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID de Riesgo</th>
+                                <th>Unidad de Negocio</th>
+                                <th>Evidencia</th>
+                                <th>Descripción</th>
+                                <th>Tipo de Riesgo</th>
+                                <th>Impacto</th>
+                                <th>Probabilidad</th>
+                                <th>Nivel de Riesgo</th>
+                                <th>Estado</th>
+                                <th>Fecha de Implementación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>RSG-001</td>
+                                <td>Minera Copper Peak</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-info" title="Ver evidencia">
+                                        <i class="fas fa-camera"></i>
+                                    </button>
+                                </td>
+                                <td>Falla en sistema de ventilación mina subterránea</td>
+                                <td>
+                                    <div class="tipos-riesgo">
+                                        <span class="badge bg-primary mb-1 d-block">Operacional</span>
+                                        <span class="badge bg-success mb-1 d-block">Económico</span>
+                                        <span class="badge bg-warning mb-1 d-block">Reputacional</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="impactos">
+                                        <small class="d-block">Crítico <span class="tipo-abrev">Op</span></small>
+                                        <small class="d-block">Grave <span class="tipo-abrev">Ec</span></small>
+                                        <small class="d-block">Moderado <span class="tipo-abrev">Rep</span></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="probabilidades">
+                                        <small class="d-block">Probable <span class="tipo-abrev">Op</span></small>
+                                        <small class="d-block">Muy probable <span class="tipo-abrev">Ec</span></small>
+                                        <small class="d-block">Poco probable <span class="tipo-abrev">Rep</span></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="niveles-riesgo">
+                                        <span class="nivel-riesgo nivel-alto d-block">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            Alto <span class="tipo-abrev">Op</span>
+                                        </span>
+                                        <span class="nivel-riesgo nivel-alto d-block">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            Alto <span class="tipo-abrev">Ec</span>
+                                        </span>
+                                        <span class="nivel-riesgo nivel-medio d-block">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            Medio <span class="tipo-abrev">Rep</span>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td><span class="estado-pendiente">Pendiente</span></td>
+                                <td>2024-03-30</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>RSG-002</td>
+                                <td>Minera Golden Hills</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-info" title="Ver evidencia">
+                                        <i class="fas fa-camera"></i>
+                                    </button>
+                                </td>
+                                <td>Derrame de sustancias químicas en área de lixiviación</td>
+                                <td>
+                                    <div class="tipos-riesgo">
+                                        <span class="badge bg-danger mb-1 d-block">Normativo</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="impactos">
+                                        <small class="d-block">Crítico <span class="tipo-abrev">Nor</span></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="probabilidades">
+                                        <small class="d-block">Poco probable <span class="tipo-abrev">Nor</span></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="nivel-riesgo nivel-alto">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        Alto
+                                    </span>
+                                </td>
+                                <td><span class="estado-completado">Completado</span></td>
+                                <td>2024-03-15</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>RSG-003</td>
+                                <td>Minera Silver Springs</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-info" title="Ver evidencia">
+                                        <i class="fas fa-camera"></i>
+                                    </button>
+                                </td>
+                                <td>Conflicto con comunidad local por uso de agua</td>
+                                <td>
+                                    <div class="tipos-riesgo">
+                                        <span class="badge bg-warning mb-1 d-block">Reputacional</span>
+                                        <span class="badge bg-danger mb-1 d-block">Normativo</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="impactos">
+                                        <small class="d-block">Grave <span class="tipo-abrev">Rep</span></small>
+                                        <small class="d-block">Moderado <span class="tipo-abrev">Nor</span></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="probabilidades">
+                                        <small class="d-block">Probable <span class="tipo-abrev">Rep</span></small>
+                                        <small class="d-block">Probable <span class="tipo-abrev">Nor</span></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="niveles-riesgo">
+                                        <span class="nivel-riesgo nivel-alto d-block">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            Alto <span class="tipo-abrev">Rep</span>
+                                        </span>
+                                        <span class="nivel-riesgo nivel-medio d-block">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            Medio <span class="tipo-abrev">Nor</span>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td><span class="estado-pendiente">Pendiente</span></td>
+                                <td>2024-04-05</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>RSG-004</td>
+                                <td>Minera Diamond Rock</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-info" title="Ver evidencia">
+                                        <i class="fas fa-camera"></i>
+                                    </button>
+                                </td>
+                                <td>Falla en sistema de bombeo principal</td>
+                                <td>
+                                    <div class="tipos-riesgo">
+                                        <span class="badge bg-primary mb-1 d-block">Operacional</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="impactos">
+                                        <small class="d-block">Moderado <span class="tipo-abrev">Op</span></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="probabilidades">
+                                        <small class="d-block">Probable <span class="tipo-abrev">Op</span></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="nivel-riesgo nivel-medio">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        Medio
+                                    </span>
+                                </td>
+                                <td><span class="estado-vencido">Vencido</span></td>
+                                <td>2024-03-10</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>RSG-005</td>
+                                <td>Minera Iron Valley</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-info" title="Ver evidencia">
+                                        <i class="fas fa-camera"></i>
+                                    </button>
+                                </td>
+                                <td>Incumplimiento de normativa ambiental en relaves</td>
+                                <td>
+                                    <div class="tipos-riesgo">
+                                        <span class="badge bg-danger mb-1 d-block">Normativo</span>
+                                        <span class="badge bg-success mb-1 d-block">Económico</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="impactos">
+                                        <small class="d-block">Crítico <span class="tipo-abrev">Nor</span></small>
+                                        <small class="d-block">Grave <span class="tipo-abrev">Ec</span></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="probabilidades">
+                                        <small class="d-block">Probable <span class="tipo-abrev">Nor</span></small>
+                                        <small class="d-block">Muy probable <span class="tipo-abrev">Ec</span></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="niveles-riesgo">
+                                        <span class="nivel-riesgo nivel-alto d-block">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            Alto <span class="tipo-abrev">Nor</span>
+                                        </span>
+                                        <span class="nivel-riesgo nivel-alto d-block">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            Alto <span class="tipo-abrev">Ec</span>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td><span class="estado-pendiente">Pendiente</span></td>
+                                <td>2024-03-25</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Inicializar DataTable
+        $(document).ready(function() {
+            $('#seguimientoTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+                }
+            });
+
+            // Inicializar las gráficas
+            initializeCharts();
+        });
+
+        function initializeCharts() {
+            // Gráfico de barras para tipos de riesgo
+            const ctx1 = document.getElementById('tipoRiesgoChart').getContext('2d');
+            const tipoRiesgoChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Operacional', 'Económico', 'Reputacional', 'Normativo'],
+                    datasets: [{
+                        label: 'Cantidad de Riesgos',
+                        data: [12, 19, 3, 5],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de pastel para niveles de riesgo
+            const ctx2 = document.getElementById('nivelRiesgoChart').getContext('2d');
+            const nivelRiesgoChart = new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: ['Alto', 'Medio', 'Bajo'],
+                    datasets: [{
+                        data: [8, 12, 6],
+                        backgroundColor: [
+                            'rgba(220, 53, 69, 0.8)',  // Rojo para Alto
+                            'rgba(255, 193, 7, 0.8)',  // Amarillo para Medio
+                            'rgba(25, 135, 84, 0.8)'   // Verde para Bajo
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        return data.labels.map((label, i) => {
+                                            const meta = chart.getDatasetMeta(0);
+                                            const style = meta.controller.getStyle(i);
+                                            return {
+                                                text: `${label} (${data.datasets[0].data[i]})`,
+                                                fillStyle: style.backgroundColor,
+                                                strokeStyle: style.borderColor,
+                                                lineWidth: style.borderWidth,
+                                                hidden: false,
+                                                index: i
+                                            };
+                                        });
+                                    }
+                                    return [];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de línea para tendencia de riesgos
+            const ctx3 = document.getElementById('tendenciaRiesgosChart').getContext('2d');
+            const tendenciaRiesgosChart = new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Riesgos Activos',
+                        data: [4, 6, 8, 12, 15, 14],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de barras para unidades de negocio
+            const ctx0 = document.getElementById('unidadNegocioChart').getContext('2d');
+            const unidadNegocioChart = new Chart(ctx0, {
+                type: 'bar',
+                data: {
+                    labels: ['Copper Peak', 'Golden Hills', 'Silver Springs', 'Diamond Rock', 'Iron Valley'],
+                    datasets: [{
+                        label: 'Riesgos por Unidad',
+                        data: [8, 5, 12, 3, 7],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
