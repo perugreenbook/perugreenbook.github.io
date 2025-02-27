@@ -88,13 +88,35 @@
             color: white;
         }
 
+        .total-risk-button {
+            width: 100%;
+            padding: 1rem;
+            margin-top: 2rem;
+            border: none;
+            border-radius: 10px;
+            background: #dc3545;
+            color: white;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .total-risk-button:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
         .content-frame {
             flex: 1;
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             gap: 2rem;
             height: calc(100vh - 4rem);
-            overflow: hidden;
+            overflow-y: auto;
+            padding-right: 1rem;
         }
 
         .frame-container {
@@ -112,23 +134,31 @@
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .frame-title:hover {
+            background: var(--primary);
+            color: white;
         }
 
         .map-container {
-            flex: 1;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            height: calc(100vh - 8rem);
+            height: 130vh;
         }
 
         .pdf-container {
-            flex: 1;
             border-radius: 15px;
             overflow-y: auto;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             position: relative;
-            height: calc(100vh - 8rem);
+            height: 130vh;
         }
 
         .loading-message {
@@ -154,6 +184,47 @@
             left: 2rem;
             width: calc(280px - 4rem);
         }
+
+        .pdf-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            height: 90vh;
+            background: white;
+            z-index: 1000;
+            border-radius: 15px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+            padding: 1rem;
+        }
+
+        .pdf-popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .pdf-popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .pdf-popup-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary);
+        }
     </style>
 </head>
 <body>
@@ -168,6 +239,10 @@
         <div id="unitsContainer">
             <!-- Los botones de unidades se cargarán aquí -->
         </div>
+        <button class="total-risk-button" onclick="openTotalRisk()">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Total Risk
+        </button>
         <button class="btn btn-danger logout-btn" onclick="logout()">
             <i class="fas fa-sign-out-alt me-2"></i>
             Cerrar Sesión
@@ -185,23 +260,53 @@
                     <iframe id="mapaFrame" src="about:blank"></iframe>
                 </div>
             </div>
-            <div class="frame-container">
-                <h3 class="frame-title">
+            <div class="frame-container" onclick="openPdfPopup()">
+                <h3 class="frame-title" style="cursor: pointer;">
                     <i class="fas fa-file-pdf me-2"></i>
                     Documentación
+                    <i class="fas fa-external-link-alt"></i>
                 </h3>
-                <div class="pdf-container">
-                    <div id="pdfLoading" class="loading-message">
-                        <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
-                        <p>Cargando documento...</p>
-                    </div>
-                    <iframe id="pdfFrame" src="about:blank"></iframe>
-                </div>
             </div>
         </div>
     </div>
 
+    <!-- PDF Popup -->
+    <div class="pdf-popup-overlay" id="pdfOverlay"></div>
+    <div class="pdf-popup" id="pdfPopup">
+        <div class="pdf-popup-header">
+            <h4>Documentación</h4>
+            <div>
+                <button class="btn btn-success me-2" onclick="downloadPdf()">
+                    <i class="fas fa-download me-2"></i>Descargar
+                </button>
+                <button class="pdf-popup-close" onclick="closePdfPopup()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <iframe id="pdfFrame" src="about:blank" style="width: 100%; height: calc(100% - 4rem);"></iframe>
+    </div>
+
     <script>
+        function openTotalRisk() {
+            const width = 800;
+            const height = 600;
+            const left = (window.innerWidth - width) / 2;
+            const top = (window.innerHeight - height) / 2;
+            
+            window.open('totalrisk.html', 'TotalRisk', 
+                `width=${width},
+                height=${height},
+                top=${top},
+                left=${left},
+                menubar=no,
+                toolbar=no,
+                location=no,
+                status=no,
+                resizable=yes`
+            );
+        }
+
         let projectsData = [];
 
         // Verificar sesión y cargar datos
@@ -273,21 +378,27 @@
             // Cargar contenido en los iframes
             const project = projectsData[index];
             document.getElementById('mapaFrame').src = project.mapaUrl;
-            
-            // Mostrar mensaje de carga
-            document.getElementById('pdfLoading').style.display = 'block';
-            
-            // Cargar PDF
-            const pdfFrame = document.getElementById('pdfFrame');
-            pdfFrame.onload = function() {
-                document.getElementById('pdfLoading').style.display = 'none';
-            };
-            pdfFrame.src = project.pdfUrl;
+            document.getElementById('pdfFrame').src = project.pdfUrl;
         }
 
         function logout() {
             sessionStorage.removeItem('userData');
             window.location.href = 'index.html';
+        }
+
+        function openPdfPopup() {
+            document.getElementById('pdfOverlay').style.display = 'block';
+            document.getElementById('pdfPopup').style.display = 'block';
+        }
+
+        function closePdfPopup() {
+            document.getElementById('pdfOverlay').style.display = 'none';
+            document.getElementById('pdfPopup').style.display = 'none';
+        }
+
+        function downloadPdf() {
+            const pdfUrl = document.getElementById('pdfFrame').src;
+            window.open(pdfUrl.replace('/preview', '/view'), '_blank');
         }
     </script>
 
