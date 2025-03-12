@@ -264,6 +264,222 @@
             background: rgba(220, 53, 69, 0.1);
             color: #dc3545;
         }
+
+        /* Estilos para el popup de Total Risk */
+        .total-risk-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .total-risk-popup h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .total-risk-popup p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .total-risk-popup .close-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 2rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .total-risk-popup .close-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        /* Estilos para la tabla de riesgos */
+        .riesgos-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            height: 130vh;
+            overflow-y: auto;
+        }
+
+        .risk-table {
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .risk-table thead th {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-weight: 500;
+        }
+
+        .risk-table tbody tr {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .risk-table tbody tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .risk-table td {
+            padding: 1rem;
+            border: none;
+            background: white;
+            vertical-align: middle;
+        }
+
+        .risk-group {
+            background: rgba(27, 93, 3, 0.05) !important;
+            font-weight: bold;
+        }
+
+        .nivel-aceptable {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            font-weight: bold;
+            border-radius: 4px;
+            padding: 4px 8px;
+        }
+
+        .nivel-tolerable {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+            font-weight: bold;
+            border-radius: 4px;
+            padding: 4px 8px;
+        }
+
+        .nivel-intolerable {
+            background-color: rgba(255, 140, 0, 0.1);
+            color: #ff8c00;
+            font-weight: bold;
+            border-radius: 4px;
+            padding: 4px 8px;
+        }
+
+        .nivel-inadmisible {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            font-weight: bold;
+            border-radius: 4px;
+            padding: 4px 8px;
+        }
+
+        /* Estilos para el popup de riesgos */
+        .riesgos-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            width: 90%;
+            height: 90vh;
+            border-radius: 15px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        .riesgos-popup-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .riesgos-popup-body {
+            padding: 1.5rem;
+            height: calc(90vh - 80px);
+            overflow-y: auto;
+        }
+
+        .risk-table thead th {
+            position: sticky;
+            top: 0;
+            background: var(--primary);
+            color: white;
+            z-index: 1;
+        }
+
+        .risk-group {
+            background: #f8f9fa !important;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Estilos para tipos de riesgo */
+        .riesgo-operacional {
+            color: #2196F3;
+            border-left: 4px solid #2196F3;
+            padding-left: 1rem !important;
+        }
+
+        .riesgo-economico {
+            color: #FF9800;
+            border-left: 4px solid #FF9800;
+            padding-left: 1rem !important;
+        }
+
+        .riesgo-seguridad {
+            color: #F44336;
+            border-left: 4px solid #F44336;
+            padding-left: 1rem !important;
+        }
+
+        .riesgo-legal {
+            color: #9C27B0;
+            border-left: 4px solid #9C27B0;
+            padding-left: 1rem !important;
+        }
+
+        /* Estilos para subencabezados de grupo */
+        .risk-subheader th {
+            background: #f8f9fa;
+            color: var(--primary);
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border-bottom: 2px solid var(--primary);
+            text-align: left;
+        }
+
+        /* Estilos para aspectos del riesgo */
+        .aspecto-cell {
+            text-align: center;
+        }
+
+        .aspecto-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            background: #f8f9fa;
+            color: #495057;
+        }
+
+        .risk-group-spacer {
+            height: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -301,22 +517,12 @@
                     <iframe id="mapaFrame" src="about:blank"></iframe>
                 </div>
             </div>
-            <div class="frame-container">
-                <h3 class="frame-title">
-                    <i class="fas fa-chart-bar me-2"></i>
-                    Análisis de Riesgos
+            <div class="frame-container" onclick="openRiesgosPopup()">
+                <h3 class="frame-title" style="cursor: pointer;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Gestión de los Riesgos
+                    <i class="fas fa-external-link-alt"></i>
                 </h3>
-                <div class="slides-container" style="height: 70vh; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                    <iframe 
-                        src="https://docs.google.com/presentation/d/1DoEypVzbL2_5WucT98wGPFhZ0n1PWsbXu-rZ78MCZ04/embed?start=false&loop=false&delayms=3000" 
-                        frameborder="0" 
-                        width="100%" 
-                        height="100%" 
-                        allowfullscreen="true" 
-                        mozallowfullscreen="true" 
-                        webkitallowfullscreen="true">
-                    </iframe>
-                </div>
             </div>
             <div class="frame-container" onclick="openPdfPopup()">
                 <h3 class="frame-title" style="cursor: pointer;">
@@ -345,24 +551,47 @@
         <iframe id="pdfFrame" src="about:blank" style="width: 100%; height: calc(100% - 4rem);"></iframe>
     </div>
 
+    <!-- Total Risk Popup -->
+    <div class="total-risk-popup" id="totalRiskPopup">
+        <h4><i class="fas fa-exclamation-triangle me-2"></i>Total Risk</h4>
+        <p>Comunícate con el equipo de 24/7 Consultores para conocer más de este producto.</p>
+        <button class="close-btn" onclick="closeTotalRiskPopup()">
+            <i class="fas fa-check me-2"></i>Entendido
+        </button>
+    </div>
+
+    <!-- Riesgos Popup -->
+    <div class="riesgos-popup" id="riesgosPopup">
+        <div class="riesgos-popup-header">
+            <h4><i class="fas fa-exclamation-triangle me-2"></i>Matriz de Riesgos</h4>
+            <button class="popup-close" onclick="closeRiesgosPopup()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="riesgos-popup-body">
+            <div class="table-responsive">
+                <table class="table table-hover risk-table">
+                    <thead>
+                        <tr>
+                            <th>Tipo de Aspectos</th>
+                            <th>Probabilidad</th>
+                            <th>Consecuencia</th>
+                            <th>Nivel de Riesgo</th>
+                            <th>Medida de Mitigación</th>
+                        </tr>
+                    </thead>
+                    <tbody id="riesgosTableBody">
+                        <!-- Se llenará dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <script>
         function openTotalRisk() {
-            const width = 800;
-            const height = 600;
-            const left = (window.innerWidth - width) / 2;
-            const top = (window.innerHeight - height) / 2;
-            
-            window.open('totalrisk.html', 'TotalRisk', 
-                `width=${width},
-                height=${height},
-                top=${top},
-                left=${left},
-                menubar=no,
-                toolbar=no,
-                location=no,
-                status=no,
-                resizable=yes`
-            );
+            document.getElementById('pdfOverlay').style.display = 'block';
+            document.getElementById('totalRiskPopup').style.display = 'block';
         }
 
         let projectsData = [];
@@ -433,10 +662,62 @@
                 btn.classList.toggle('active', i === index);
             });
 
-            // Cargar contenido en los iframes
             const project = projectsData[index];
             document.getElementById('mapaFrame').src = project.mapaUrl;
             document.getElementById('pdfFrame').src = project.pdfUrl;
+
+            // Renderizar tabla de riesgos
+            const tbody = document.getElementById('riesgosTableBody');
+            tbody.innerHTML = '';
+
+            project.riesgos.forEach(grupo => {
+                // Agregar fila de grupo
+                const groupRow = document.createElement('tr');
+                const riesgoClass = getRiesgoClass(grupo.riesgo);
+                groupRow.innerHTML = `
+                    <td colspan="5" class="risk-group ${riesgoClass}">
+                        <i class="fas fa-folder-open me-2"></i>${grupo.riesgo}
+                    </td>
+                `;
+                tbody.appendChild(groupRow);
+
+                // Agregar encabezados para este grupo
+                const headerRow = document.createElement('tr');
+                headerRow.className = 'risk-subheader';
+                headerRow.innerHTML = `
+                    <th>Tipo de Aspectos</th>
+                    <th>Probabilidad</th>
+                    <th>Consecuencia</th>
+                    <th>Nivel de Riesgo</th>
+                    <th>Medida de Mitigación</th>
+                `;
+                tbody.appendChild(headerRow);
+
+                // Agregar items del grupo
+                grupo.items.forEach(item => {
+                    const row = document.createElement('tr');
+                    const aspectoIcon = getAspectoIcon(item.aspectos);
+                    const nivelClass = `nivel-${item.nivel.toLowerCase()}`;
+                    row.innerHTML = `
+                        <td class="aspecto-cell">
+                            <span class="aspecto-tag">
+                                ${aspectoIcon}
+                                ${item.aspectos}
+                            </span>
+                        </td>
+                        <td>${item.probabilidad}</td>
+                        <td>${item.consecuencia}</td>
+                        <td><span class="${nivelClass}">${item.nivel}</span></td>
+                        <td>${item.mitigacion}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+                // Agregar espacio después de cada grupo
+                const spacerRow = document.createElement('tr');
+                spacerRow.className = 'risk-group-spacer';
+                tbody.appendChild(spacerRow);
+            });
         }
 
         function logout() {
@@ -456,7 +737,60 @@
 
         function downloadPdf() {
             const pdfUrl = document.getElementById('pdfFrame').src;
-            window.open(pdfUrl.replace('/preview', '/view'), '_blank');
+            // Convertir URL de preview a URL de descarga
+            if (pdfUrl.includes('/file/d/')) {
+                const fileId = pdfUrl.split('/file/d/')[1].split('/')[0];
+                window.open(`https://drive.google.com/uc?export=download&id=${fileId}`, '_blank');
+            } else {
+                window.open(pdfUrl, '_blank');
+            }
+        }
+
+        function closeTotalRiskPopup() {
+            document.getElementById('pdfOverlay').style.display = 'none';
+            document.getElementById('totalRiskPopup').style.display = 'none';
+        }
+
+        function openRiesgosPopup() {
+            document.getElementById('pdfOverlay').style.display = 'block';
+            document.getElementById('riesgosPopup').style.display = 'block';
+        }
+
+        function closeRiesgosPopup() {
+            document.getElementById('pdfOverlay').style.display = 'none';
+            document.getElementById('riesgosPopup').style.display = 'none';
+        }
+
+        function getRiesgoClass(riesgo) {
+            riesgo = riesgo.toLowerCase();
+            if (riesgo.includes('operacional')) return 'riesgo-operacional';
+            if (riesgo.includes('economico')) return 'riesgo-economico';
+            if (riesgo.includes('seguridad')) return 'riesgo-seguridad';
+            if (riesgo.includes('legal')) return 'riesgo-legal';
+            return '';
+        }
+
+        function getAspectoIcon(aspecto) {
+            aspecto = aspecto.toLowerCase();
+            aspecto = aspecto.normalize('NFD').replace(/[\u0300-\u036f]/g, ""); // Eliminar acentos
+            switch(true) {
+                case aspecto.includes('operacional'):
+                    return '<i class="fas fa-cogs text-primary"></i>';
+                case aspecto.includes('economico'):
+                    return '<i class="fas fa-dollar-sign text-success"></i>';
+                case aspecto.includes('normativo'):
+                case aspecto.includes('legal'):
+                case aspecto.includes('regulatorio'):
+                    return '<i class="fas fa-balance-scale text-info"></i>';
+                case aspecto.includes('reputacional'):
+                case aspecto.includes('imagen'):
+                case aspecto.includes('reputacion'):
+                    return '<i class="fas fa-check-circle text-warning"></i>';
+                default:
+                    // Para debugging
+                    console.log('Aspecto no reconocido:', aspecto);
+                    return '<i class="fas fa-exclamation-circle text-secondary"></i> ';
+            }
         }
     </script>
 
