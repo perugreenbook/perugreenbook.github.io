@@ -532,6 +532,13 @@
                     <i class="fas fa-external-link-alt"></i>
                 </h3>
             </div>
+            <div class="frame-container" onclick="openEquiposPopup()">
+                <h3 class="frame-title" style="cursor: pointer;">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    Equipos de Seguridad Requeridos
+                    <i class="fas fa-external-link-alt"></i>
+                </h3>
+            </div>
         </div>
     </div>
 
@@ -587,6 +594,25 @@
                 </table>
             </div>
         </div>
+    </div>
+
+    <!-- Equipos de Seguridad Popup -->
+    <div class="pdf-popup" id="equiposPopup">
+        <div class="pdf-popup-header">
+            <h4><i class="fas fa-shield-alt me-2"></i>Equipos de Seguridad Requeridos</h4>
+            <div class="pdf-actions">
+                <button class="pdf-download-btn" onclick="downloadEquipos()" title="Descargar Excel">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button class="pdf-popup-close" onclick="closeEquiposPopup()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <iframe id="equiposFrame" 
+            src="https://docs.google.com/spreadsheets/d/1K8YkVEDpHbrXssAHDw8pY3BGKjHAX6wo/preview" 
+            style="width: 100%; height: calc(100% - 4rem);">
+        </iframe>
     </div>
 
     <script>
@@ -792,6 +818,21 @@
                     console.log('Aspecto no reconocido:', aspecto);
                     return '<i class="fas fa-exclamation-circle text-secondary"></i> ';
             }
+        }
+
+        function openEquiposPopup() {
+            document.getElementById('pdfOverlay').style.display = 'block';
+            document.getElementById('equiposPopup').style.display = 'block';
+        }
+
+        function closeEquiposPopup() {
+            document.getElementById('pdfOverlay').style.display = 'none';
+            document.getElementById('equiposPopup').style.display = 'none';
+        }
+
+        function downloadEquipos() {
+            const fileId = '1K8YkVEDpHbrXssAHDw8pY3BGKjHAX6wo';
+            window.open(`https://drive.google.com/uc?export=download&id=${fileId}`, '_blank');
         }
     </script>
 
